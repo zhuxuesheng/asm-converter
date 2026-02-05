@@ -1,0 +1,33 @@
+# GitHub Pages 配置
+title: 汇编语言调用约定技术文档
+description: 面向汇编语言专家的全面调用约定参考资料
+baseurl: "/asm-converter"
+url: "https://zhuxuesheng.github.io"
+
+# 主题配置
+remote_theme: pages-themes/cayman@v0.2.0
+plugins:
+  - jekyll-remote-theme
+
+# Markdown 配置
+markdown: kramdown
+kramdown:
+  input: GFM
+  hard_wrap: false
+  syntax_highlighter: rouge
+
+# 默认配置
+defaults:
+  - scope:
+      path: "docs"
+    values:
+      layout: default
+
+# 排除文件
+exclude:
+  - .kiro
+  - examples
+  - Makefile
+  - "*.exe"
+  - "*.o"
+  - "*.obj"
