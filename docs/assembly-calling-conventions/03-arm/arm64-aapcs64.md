@@ -259,14 +259,18 @@ sum_ten:
     .type caller_example, %function
 
 caller_example:
-    STP     X29, X30, [SP, #-32]!   // 保存FP和LR，分配栈空间
-    MOV     X29, SP                  // 建立帧指针
+    // 分配栈空间：16字节用于保存FP/LR，16字节用于传递栈参数
+    // 栈参数必须位于SP指向的位置，供被调用函数通过[SP]访问
+    SUB     SP, SP, #32             // 分配32字节栈空间
+    STP     X29, X30, [SP, #16]     // 保存FP/LR到高地址 [SP+16]
+    ADD     X29, SP, #16            // 建立帧指针
     
     // 设置栈参数（第9和第10个参数）
+    // 栈参数必须放在SP指向的位置，被调用函数通过[SP+0]和[SP+8]访问
     MOV     X9, #9
-    STR     X9, [SP, #16]           // 参数 i = 9
+    STR     X9, [SP, #0]            // 参数 i = 9 (位于SP)
     MOV     X9, #10
-    STR     X9, [SP, #24]           // 参数 j = 10
+    STR     X9, [SP, #8]            // 参数 j = 10 (位于SP+8)
     
     // 设置寄存器参数
     MOV     X0, #1                  // 参数 a = 1
@@ -282,7 +286,8 @@ caller_example:
     
     // 结果在 X0 中 (= 55)
     
-    LDP     X29, X30, [SP], #32     // 恢复FP和LR
+    LDP     X29, X30, [SP, #16]     // 恢复FP/LR
+    ADD     SP, SP, #32             // 释放栈空间
     RET                             // 返回
 
     .size caller_example, .-caller_example
@@ -407,7 +412,7 @@ get_big_struct:
     STR     X9, [X8, #16]       // data[2] = 3
     MOV     X9, #4
     STR     X9, [X8, #24]       // data[3] = 4
-    // X8 保持不变
+    // X8 是调用者保存寄存器，仅作为输入使用
     RET
 ```
 

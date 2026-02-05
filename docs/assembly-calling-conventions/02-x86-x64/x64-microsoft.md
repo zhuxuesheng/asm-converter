@@ -226,8 +226,9 @@ caller_example:
     ; 分配Shadow Space + 栈参数空间
     ; Shadow Space: 32字节
     ; 栈参数: 2个 × 8字节 = 16字节
-    ; 总计: 48字节，但需要16字节对齐
-    sub     rsp, 48 + 8         ; 56字节（对齐到16字节）
+    ; 总计: 48字节
+    ; push rbp后RSP已是16字节对齐，48 % 16 == 0，无需额外对齐
+    sub     rsp, 48             ; 48字节（已对齐到16字节）
     
     ; 调用 sum_six(1, 2, 3, 4, 5, 6)
     mov     qword [rsp + 40], 6 ; 参数 f
@@ -239,7 +240,7 @@ caller_example:
     call    sum_six
     
     ; 结果在 RAX 中
-    add     rsp, 48 + 8
+    add     rsp, 48
     pop     rbp
     ret
 ```

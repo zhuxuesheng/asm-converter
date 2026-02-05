@@ -231,7 +231,8 @@ caller_example:
 #include "textflag.h"
 
 // func SumEight(a, b, c, d, e, f, g, h int64) int64
-// Go 1.17+ 使用寄存器调用约定，与System V类似但有差异
+// Go 1.17+ 内部使用寄存器调用约定，但手写汇编通常仍使用基于栈的 ABI0
+// 编译器会自动生成 ABIInternal 到 ABI0 的转换代码
 TEXT ·SumEight(SB), NOSPLIT, $0-72
     MOVQ    a+0(FP), AX         // AX = a
     ADDQ    b+8(FP), AX         // AX += b
